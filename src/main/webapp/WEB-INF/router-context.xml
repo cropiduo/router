@@ -15,9 +15,10 @@
 
 	<mvc:annotation-driven/>
 	<context:component-scan base-package="ab.testing.router"/>
+	<context:property-placeholder location="classpath:/config.properties" ignore-unresolvable="true"/>
 
 	<!-- MongoDB config -->
-	<context:property-placeholder location="classpath:/mongodb/mongo.properties"/>
+	<context:property-placeholder location="classpath:/mongodb/mongo.properties" ignore-unresolvable="true"/>
 
 	<mongo:db-factory id="mongoDbFactory" host="${mongo.host}" port="${mongo.port}" dbname="${mongo.name}"/>
 
