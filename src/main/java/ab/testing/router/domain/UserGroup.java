@@ -8,14 +8,14 @@ public class UserGroup {
 
     @Id
     private String userId;
-    private String group;
+    private String groupName;
 
-    public UserGroup(String userId, String group) {
+    public UserGroup(String userId, String groupName) {
         this.userId = userId;
-        this.group = group;
+        this.groupName = groupName;
     }
 
-    public String getGroup() {
-        return group;
+    public String getGroupName() {
+        return groupName;
     }
 }

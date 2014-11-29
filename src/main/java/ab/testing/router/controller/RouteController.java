@@ -1,6 +1,5 @@
 package ab.testing.router.controller;
 
-import ab.testing.router.domain.UserGroup;
 import ab.testing.router.service.RouteService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +34,8 @@ public class RouteController {
     public String getUserGroupForUserId(@RequestParam(value = "userId", required = true) String userId) {
         checkArgument(isNotEmpty(userId));
 
-        log.info("looking for group with given userId: " + userId);
-        UserGroup userGroup = routeService.getUserGroupByUserId(userId);
+        log.info("looking for group name for given userId: " + userId);
 
-        return userGroup.getGroup();
+        return routeService.getGroupNameByUserId(userId);
     }
 }

@@ -50,14 +50,12 @@ public class RouteControllerTest {
     public void returnsGroupNameForGivenProperUserId() {
         // given
         String userId = USER_ID;
-        when(mockRouteService.getUserGroupByUserId(userId)).thenReturn(mockUserGroup);
-        when(mockUserGroup.getGroup()).thenReturn(GROUP_NAME);
+        when(mockRouteService.getGroupNameByUserId(userId)).thenReturn(GROUP_NAME);
 
         // when
         routeController.getUserGroupForUserId(userId);
 
         // then
-        verify(mockRouteService).getUserGroupByUserId(userId);
-        verify(mockUserGroup).getGroup();
+        verify(mockRouteService).getGroupNameByUserId(userId);
     }
 }
