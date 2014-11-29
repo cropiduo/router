@@ -31,6 +31,7 @@ public class RouteServiceImpl implements RouteService {
                     groupName = userGroup.getGroupName();
                 } else {
                     groupName = groupCalculator.calculateGroupNameForUser(userId);
+                    userGroupRepository.saveUserGroup(userId, groupName);
                 }
             }
         } else {

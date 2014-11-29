@@ -23,4 +23,9 @@ public class UserGroupRepositoryImpl implements UserGroupRepository {
     public UserGroup getUserGroupByUserId(String userId) {
         return mongoTemplate.findOne(query(where("userId").is(userId)), UserGroup.class);
     }
+
+    @Override
+    public void saveUserGroup(String userId, String groupName) {
+        mongoTemplate.insert(new UserGroup(userId, groupName));
+    }
 }

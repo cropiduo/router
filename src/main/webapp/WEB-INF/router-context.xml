@@ -18,12 +18,28 @@
 	<context:property-placeholder location="classpath:/config.properties" ignore-unresolvable="true"/>
 
 	<!-- MongoDB config -->
+	<bean id="mappingContext"
+		  class="org.springframework.data.mongodb.core.mapping.MongoMappingContext"/>
+
+	<bean id="defaultMongoTypeMapper" class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
+		<constructor-arg name="typeKey">
+			<null/>
+		</constructor-arg>
+	</bean>
+
+	<bean id="mappingMongoConverter" class="org.springframework.data.mongodb.core.convert.MappingMongoConverter">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
+		<constructor-arg name="mappingContext" ref="mappingContext"/>
+		<property name="typeMapper" ref="defaultMongoTypeMapper"/>
+	</bean>
+
 	<context:property-placeholder location="classpath:/mongodb/mongo.properties" ignore-unresolvable="true"/>
 
 	<mongo:db-factory id="mongoDbFactory" host="${mongo.host}" port="${mongo.port}" dbname="${mongo.name}"/>
 
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
+		<constructor-arg name="mongoConverter" ref="mappingMongoConverter"/>
 	</bean>
 
 	<mongo:repositories base-package="ab.testing.router.repository"/>
