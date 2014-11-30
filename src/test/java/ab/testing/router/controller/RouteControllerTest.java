@@ -1,7 +1,9 @@
 package ab.testing.router.controller;
 
 import ab.testing.router.domain.UserGroup;
+import ab.testing.router.exception.TooManyRequestsException;
 import ab.testing.router.service.RouteService;
+import com.google.common.util.concurrent.RateLimiter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,12 +19,14 @@ public class RouteControllerTest {
     public static final String USER_ID = "USER_ID";
     public static final String GROUP_NAME = "GROUP_NAME";
 
-    @InjectMocks
-    private RouteController routeController;
+    @Mock
+    private RateLimiter mockRateLimiter;
     @Mock
     private RouteService mockRouteService;
     @Mock
     private UserGroup mockUserGroup;
+    @InjectMocks
+    private RouteController routeController;
 
     @Test(expected = IllegalArgumentException.class)
     public void throwsIllegalArgumentExceptionWhenNoParamsGiven() {
@@ -51,11 +55,27 @@ public class RouteControllerTest {
         // given
         String userId = USER_ID;
         when(mockRouteService.getGroupNameByUserId(userId)).thenReturn(GROUP_NAME);
+        when(mockRateLimiter.tryAcquire()).thenReturn(true);
 
         // when
         routeController.getUserGroupForUserId(userId);
 
         // then
+        verify(mockRateLimiter).tryAcquire();
         verify(mockRouteService).getGroupNameByUserId(userId);
+    }
+
+    @Test(expected = TooManyRequestsException.class)
+    public void throwsTooManyRequestsExceptionWhenRequestsLimitReached() {
+        // given
+        String userId = USER_ID;
+        when(mockRouteService.getGroupNameByUserId(userId)).thenReturn(GROUP_NAME);
+        when(mockRateLimiter.tryAcquire()).thenReturn(false);
+
+        // when
+        routeController.getUserGroupForUserId(userId);
+
+        // then
+        verify(mockRateLimiter).tryAcquire();
     }
 }

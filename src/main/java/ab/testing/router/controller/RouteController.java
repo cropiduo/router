@@ -1,6 +1,8 @@
 package ab.testing.router.controller;
 
+import ab.testing.router.exception.TooManyRequestsException;
 import ab.testing.router.service.RouteService;
+import com.google.common.util.concurrent.RateLimiter;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +19,14 @@ public class RouteController {
 
     private RouteService routeService;
 
+    private final RateLimiter limiter;
+
     private static Logger log = Logger.getLogger(RouteController.class);
 
     @Autowired
-    public RouteController(RouteService routeService) {
+    public RouteController(RouteService routeService, RateLimiter rateLimiter) {
         this.routeService = routeService;
+        this.limiter = rateLimiter;
     }
 
     /**
@@ -34,7 +39,11 @@ public class RouteController {
     public String getUserGroupForUserId(@RequestParam(value = "userId", required = true) String userId) {
         checkArgument(isNotEmpty(userId));
 
-        log.info("looking for group name for given userId: " + userId);
+        log.info("Looking for group name for given userId: " + userId);
+        if (!limiter.tryAcquire()) {
+            log.error("Too many simultaneous requests per second - rejected request for given userId: " + userId);
+            throw new TooManyRequestsException();
+        }
 
         return routeService.getGroupNameByUserId(userId);
     }
