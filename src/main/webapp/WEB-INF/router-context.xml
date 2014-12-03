@@ -35,12 +35,22 @@
 
 	<context:property-placeholder location="classpath:/mongodb/mongo.properties" ignore-unresolvable="true"/>
 
-	<mongo:db-factory id="mongoDbFactory" host="${mongo.host}" port="${mongo.port}" dbname="${mongo.name}"/>
+	<mongo:db-factory id="mongoDbFactory" host="${mongo.host}" port="${mongo.port}" dbname="${mongo.name}" mongo-ref="mongo"/>
 
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
 		<constructor-arg name="mongoConverter" ref="mappingMongoConverter"/>
 	</bean>
+
+	<mongo:mongo id="mongo">
+		<mongo:options
+				connections-per-host="${mongo.connections.per.host}"
+				threads-allowed-to-block-for-connection-multiplier="${mongo.threads.allowed.to.block.for.connection.multiplier}"
+				max-wait-time="${mongo.max.wait.time}"
+				connect-timeout="${mongo.connect.timeout}"
+				socket-timeout="${mongo.socket.timeout}"
+				/>
+	</mongo:mongo>
 
 	<mongo:repositories base-package="ab.testing.router.repository"/>
 	<!-- End of: MongoDB config -->

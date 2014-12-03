@@ -16,16 +16,14 @@ import java.util.stream.Stream;
 public final class GroupCalculatorImpl implements GroupCalculator {
 
     private final Map<String, AtomicInteger> currentDistribution;
-    private final AtomicInteger usersCounter;
-    private Map<String, AtomicInteger> routeConfig;
     private final Map<String, Double> expectedDistribution;
+    private final AtomicInteger usersCounter;
 
     @Autowired
     public GroupCalculatorImpl(RouteConfiguration routeConfiguration) {
-        routeConfig = routeConfiguration.getConfig();
-        currentDistribution = routeConfig.keySet().stream().collect(Collectors.toMap(k -> k, v -> new AtomicInteger()));
-        expectedDistribution = ImmutableMap.copyOf(getPercentageDistribution(routeConfig, routeConfiguration.getDenominator()));
-        usersCounter = new AtomicInteger();
+        currentDistribution = routeConfiguration.getCurrentDistribution();
+        expectedDistribution = ImmutableMap.copyOf(getPercentageDistribution(routeConfiguration.getCurrentDistributionTemplate(), routeConfiguration.getDenominator()));
+        usersCounter = new AtomicInteger(currentDistribution.values().stream().mapToInt(AtomicInteger::get).sum());
     }
 
     @Override

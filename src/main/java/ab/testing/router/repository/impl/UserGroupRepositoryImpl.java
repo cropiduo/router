@@ -28,4 +28,9 @@ public class UserGroupRepositoryImpl implements UserGroupRepository {
     public void saveUserGroup(String userId, String groupName) {
         mongoTemplate.insert(new UserGroup(userId, groupName));
     }
+
+    @Override
+    public void dropCollection() {
+        mongoTemplate.dropCollection(UserGroup.class);
+    }
 }

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 
@@ -27,16 +28,17 @@ public class GroupCalculatorImplTest {
 
     @Mock
     private RouteConfiguration mockRouteConfiguration;
-    private Map<String, AtomicInteger> routeConfig;
+    private Map<String, AtomicInteger> config;
 
     @Before
     public void setUp() {
-        routeConfig = ImmutableMap.of(
+        config = ImmutableMap.of(
                 GROUP_WITH_SMALLER_EXPECTED_AMOUNT_OF_USERS, new AtomicInteger(2),
                 GROUP_WITH_BIGGER_EXPECTED_AMOUNT_OF_USERS, new AtomicInteger(3)
         );
-        when(mockRouteConfiguration.getConfig()).thenReturn(routeConfig);
-        when(mockRouteConfiguration.getDenominator()).thenReturn(routeConfig.values().stream().mapToInt(AtomicInteger::get).sum());
+        when(mockRouteConfiguration.getCurrentDistributionTemplate()).thenReturn(config);
+        when(mockRouteConfiguration.getDenominator()).thenReturn(config.values().stream().mapToInt(AtomicInteger::get).sum());
+        when(mockRouteConfiguration.getCurrentDistribution()).thenReturn(config.keySet().stream().collect(Collectors.toMap(k -> k, v -> new AtomicInteger())));
 
         groupCalculator = new GroupCalculatorImpl(mockRouteConfiguration);
     }
@@ -56,7 +58,7 @@ public class GroupCalculatorImplTest {
     public void properlyDistributesUsersForGivenConfig() {
         // given
         List<String> groups = new ArrayList<>();
-        int denominator = routeConfig.values().stream().mapToInt(AtomicInteger::get).sum();
+        int denominator = config.values().stream().mapToInt(AtomicInteger::get).sum();
 
         // when
         for (int i = 0; i < denominator; i++) {
@@ -64,9 +66,9 @@ public class GroupCalculatorImplTest {
         }
 
         // then
-        Assert.assertEquals(routeConfig.get(GROUP_WITH_SMALLER_EXPECTED_AMOUNT_OF_USERS).get(),
+        Assert.assertEquals(config.get(GROUP_WITH_SMALLER_EXPECTED_AMOUNT_OF_USERS).get(),
                 groups.stream().filter(GROUP_WITH_SMALLER_EXPECTED_AMOUNT_OF_USERS::equals).count());
-        Assert.assertEquals(routeConfig.get(GROUP_WITH_BIGGER_EXPECTED_AMOUNT_OF_USERS).get(),
+        Assert.assertEquals(config.get(GROUP_WITH_BIGGER_EXPECTED_AMOUNT_OF_USERS).get(),
                 groups.stream().filter(GROUP_WITH_BIGGER_EXPECTED_AMOUNT_OF_USERS::equals).count());
     }
 }

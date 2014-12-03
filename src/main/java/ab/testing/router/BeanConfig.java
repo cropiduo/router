@@ -8,11 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BeanConfig {
 
-    @Value("${rate.limiter.permits.per.second}")
-    private double permitsPerSecond;
-
     @Bean
-    public RateLimiter rateLimiter() {
+    public RateLimiter rateLimiter(@Value("${rate.limiter.permits.per.second}") double permitsPerSecond) {
         return RateLimiter.create(permitsPerSecond);
     }
 }

@@ -1,6 +1,5 @@
 package ab.testing.router.controller;
 
-import ab.testing.router.domain.UserGroup;
 import ab.testing.router.exception.TooManyRequestsException;
 import ab.testing.router.service.RouteService;
 import com.google.common.util.concurrent.RateLimiter;
@@ -23,8 +22,6 @@ public class RouteControllerTest {
     private RateLimiter mockRateLimiter;
     @Mock
     private RouteService mockRouteService;
-    @Mock
-    private UserGroup mockUserGroup;
     @InjectMocks
     private RouteController routeController;
 
